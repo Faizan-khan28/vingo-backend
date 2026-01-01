@@ -56,7 +56,7 @@ export const signUp = async (req, res) => {
 };
 
 
-export const signIn = async () => {
+export const Login = async (req,res) => {
     try {
     const {email, password} = req.body;
 
@@ -81,9 +81,9 @@ export const signIn = async () => {
 
     return res
       .status(200)
-      .json({ message: "user sign succssesfully", user });
+      .json({ message: "user Login succssesfully", user });
   } catch (error) {
-    return res.status(500).json(`error occuring in signIn ${error}`);
+    return res.status(500).json(`error occuring in Login ${error}`);
   }
 }
 
