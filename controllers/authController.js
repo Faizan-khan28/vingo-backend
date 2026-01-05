@@ -1,6 +1,7 @@
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 import genToken from "../utils/token.js";
+import { sendOptMail } from "../utils/mail.js";
 
 export const signUp = async (req, res) => {
   try {
@@ -17,10 +18,10 @@ export const signUp = async (req, res) => {
       return res.status(400).json({ message: "User already exist" });
     }
 
-    if (password.length < 10) {
+    if (password.length < 8) {
      return res
         .status(400)
-        .json({ message: "Password must be atleast 10 characters" });
+        .json({ message: "Password must be atleast 8 characters" });
     }
 
     if (mobile.length < 10) {
@@ -94,4 +95,57 @@ export const logOut = async (req,res) => {
     } catch (error) {
       return res.status(500).json({message: "error Occuring in Log Out"})
     }
+}
+
+export const otpSend = async (req,res) => {
+    try {
+      const {email} = req.body
+      const user = await User.findOne({email})
+      if(!user) {
+        return res.status(400).json({message: "User does not exist"})
+      }
+      const otp = Math.floor(1000 + Math.random() * 9000).toString()
+      user.otp = otp
+      user.otpExpire = Date.now()+5*60*1000
+      user.otpVerified = false
+      await user.save()
+      await sendOptMail(email,otp)
+      return res.status(200).json({message: "otp sent succussfully"})
+    } catch (error) {
+      return res.status(500).json({message: `error in send otp ${error}`})
+    }
+}
+
+export const verifyOtp = async (req ,res) => {
+    try {
+      const {email,otp} = req.body;
+      const user = User.findOne({email});
+      if(!user || user.otp!=otp || user.otpExpire<Date.now()) {
+        return res.status(400).json({message: "invalid/expired otp"})
+      }
+      user.otpVerified = true
+      user.otp = undefined
+      user.otpExpire = undefined
+      await user.save()
+      return res.status(200).json({message: "otp verified succussfully"})
+    } catch (error) {
+      return res.status(500).json({message: `error in otp verify ${error}`})
+    }
+}
+
+export const resetPassword = async (req,res) => {
+  try {
+    const {email,newPassword} = req.body;
+    const user = await User.findOne({email})
+    if(!user || !user.otpVerified) {
+      return res.status(400).json({message: "Otp verification required"})
+    }
+    const hashedPassword = await bcrypt.hash(newPassword,10)
+    user.password = hashedPassword
+    user.otpVerified = false
+    await user.save()
+    return res.status(200).json({message: "Password reset succussfull"})
+  } catch (error) {
+    return res.status(500).json({message: `error in reset password ${error}`})
+  }
 }
