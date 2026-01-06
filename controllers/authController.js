@@ -18,10 +18,10 @@ export const signUp = async (req, res) => {
       return res.status(400).json({ message: "User already exist" });
     }
 
-    if (password.length < 8) {
+    if (password.length < 6) {
      return res
         .status(400)
-        .json({ message: "Password must be atleast 8 characters" });
+        .json({ message: "Password must be atleast 6 characters or long" });
     }
 
     if (mobile.length < 10) {
@@ -97,7 +97,7 @@ export const logOut = async (req,res) => {
     }
 }
 
-export const otpSend = async (req,res) => {
+export const sendOtp = async (req,res) => {
     try {
       const {email} = req.body
       const user = await User.findOne({email})
@@ -116,11 +116,11 @@ export const otpSend = async (req,res) => {
     }
 }
 
-export const verifyOtp = async (req ,res) => {
+export const Otpverify = async (req ,res) => {
     try {
       const {email,otp} = req.body;
-      const user = User.findOne({email});
-      if(!user || user.otp!=otp || user.otpExpire<Date.now()) {
+      const user = await User.findOne({email});
+      if(!user ||String(user.otp) != String(otp) || user.otpExpire<Date.now()) {
         return res.status(400).json({message: "invalid/expired otp"})
       }
       user.otpVerified = true

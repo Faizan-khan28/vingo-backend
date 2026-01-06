@@ -1,5 +1,5 @@
 import express from "express"
-import { Login, logOut, otpSend, resetPassword, signUp, verifyOtp } from "../controllers/authController.js"
+import { Login, logOut, Otpverify, resetPassword, sendOtp, signUp,} from "../controllers/authController.js"
 
 const authRouter = express.Router()
 
@@ -8,8 +8,8 @@ authRouter.post("/login",Login)
 authRouter.get("/logout",logOut)
 
 // Forgot password routes
-authRouter.post("/otp-send",otpSend)
-authRouter.post("/verify-otp",verifyOtp)
+authRouter.post("/send-otp",sendOtp)
+authRouter.post("/otp-verify",Otpverify)
 authRouter.post("/reset-password",resetPassword)
 
 export default authRouter;
