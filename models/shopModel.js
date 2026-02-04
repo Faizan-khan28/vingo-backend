@@ -26,7 +26,11 @@ const shopSchema = new mongoose.Schema({
     address: {
         type : String,
         required : true
-    }
+    },
+    items: [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Item"
+    }]
 
 },{timeseries:true})
 
