@@ -20,8 +20,6 @@ export const createShop = async (req,res) => {
             image,
             owner:req.userId
         })
-        await shop.populate("owner")
-        return res.status(201).json(shop)
         } else {
           shop= await Shop.findByIdAndUpdate(shop._id,{
             name,
@@ -32,6 +30,8 @@ export const createShop = async (req,res) => {
             owner:req.userId
           },{new: true})
         }
+        await shop.populate("owner")
+        return res.status(201).json(shop)
 
     } catch (error) {
         return res.status(500).json({message: `create shop error ${error}`})
