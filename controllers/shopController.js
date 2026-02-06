@@ -9,7 +9,10 @@ export const createShop = async (req,res) => {
           image = await uploadOnCloudinary(req.file.path)
         }
 
-        const shop = await Shop.create({
+        let shop = Shop.findOne({owner: req.userId})
+
+        if (!shop) {
+            shop = await Shop.create({
             name,
             city,
             state,
@@ -19,6 +22,17 @@ export const createShop = async (req,res) => {
         })
         await shop.populate("owner")
         return res.status(201).json(shop)
+        } else {
+          shop= await Shop.findByIdAndUpdate(shop._id,{
+            name,
+            city,
+            state,
+            address,
+            image,
+            owner:req.userId
+          },{new: true})
+        }
+
     } catch (error) {
         return res.status(500).json({message: `create shop error ${error}`})
     }
