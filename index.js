@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors"
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoute.js";
+import shopRouter from "./routes/createShopRoute.js";
+import itemRouter from "./routes/itemRoute.js";
 const app = express();
 dotenv.config();
 
@@ -22,6 +24,8 @@ app.use(cors({
 // routes
 app.use("/api/auth",authRouter)
 app.use("/api/user",userRouter)
+app.use("/api/shop",shopRouter)
+app.use("/api/item",itemRouter)
 
 app.listen(PORT, ()=> {
     connectDb();
