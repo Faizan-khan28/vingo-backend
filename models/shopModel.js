@@ -32,7 +32,7 @@ const shopSchema = new mongoose.Schema({
         ref : "Item"
     }]
 
-},{timeseries:true})
+},{timestamps:true})
 
 const Shop = mongoose.model("Shop",shopSchema)
 export default Shop;
