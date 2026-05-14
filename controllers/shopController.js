@@ -31,7 +31,7 @@ export const createShop = async (req,res) => {
             owner:req.userId
           },{new: true})
         }
-        await shop.populate("owner")
+        await shop.populate("owner items")
         return res.status(201).json(shop)
 
     } catch (error) {

@@ -67,7 +67,7 @@ export const Login = async (req,res) => {
       return res.status(400).json({ message: "User Does not exist" });
     }
     
-    const isMatch = await bcrypt.compare(password,user.password);
+    const isMatch =  bcrypt.compare(password,user.password);
     if(!isMatch) {
         return res.status(400).json({message: "incorrect password"})
     }
@@ -84,6 +84,7 @@ export const Login = async (req,res) => {
       .status(200)
       .json({ message: "user Login succssesfully", user });
   } catch (error) {
+    console.log(error)
     return res.status(500).json(`error occuring in Login ${error}`);
   }
 }
