@@ -19,7 +19,12 @@ export const addItem = async  (req,res) => {
 
         shop.items.push(item._id)
         await shop.save()
-        await shop.populate("items owner")
+        
+        await shop.populate("owner").populate({
+          path : "items",
+         options : {sort:{updatedAt: -1}}
+        })
+
         return res.status(201).json(shop)
     } catch (error) {
         return res.status(500).json({message: `error in addItem ${error}`})
@@ -41,8 +46,25 @@ export const editItem = async  (req,res) => {
     if(!item) {
         return res.status(400).json({message:`item not found`})
     }
-    return res.status(200).json({message:"item edit successfully"})
+    const shop = await Shop.findOne({owner:req.userId}).populate({
+        path : "items",
+        options : {sort:{updatedAt: -1}}
+    })
+    return res.status(200).json({message:"item edit successfully",shop})
    } catch (error) {
     return res.status(500).json({message:`error in edit item ${error}`})
    }
+}
+
+export const getItem = async (req,res) => {
+    try {
+        const itemId = req.params.itemId
+        const item = await Item.findById(itemId)
+        if(!item) {
+            return res.status(400).json({message:`item not found`})
+        }
+        return res.status(200).json(item)
+    } catch (error) {
+        return res.status(500).json({message:`error in get item ${error}`})
+    }
 }
